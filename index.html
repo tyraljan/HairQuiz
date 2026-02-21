@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Natural Hair Type Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #FAF8F4;
+      --warm-white: #FFFFFF;
+      --bark: #3B2A1A;
+      --cocoa: #7A4F2E;
+      --terracotta: #C4713A;
+      --gold: #D4A853;
+      --mist: #EDE9E3;
+      --text: #2C1A0E;
+      --sub: #8C7160;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 620px;
+    }
+
+    /* ── INTRO ── */
+    .intro {
+      text-align: center;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .intro .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cocoa);
+      margin-bottom: 1.2rem;
+    }
+
+    .intro h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3rem);
+      line-height: 1.15;
+      color: var(--bark);
+      margin-bottom: 1rem;
+    }
+
+    .intro h1 em {
+      font-style: italic;
+      color: var(--terracotta);
+    }
+
+    .intro p {
+      font-size: 1rem;
+      color: var(--sub);
+      line-height: 1.7;
+      max-width: 420px;
+      margin: 0 auto 2.2rem;
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--bark);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      padding: 0.85rem 2.2rem;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn:hover { background: var(--cocoa); transform: translateY(-1px); }
+
+    /* ── PROGRESS ── */
+    .progress-bar-wrap {
+      width: 100%;
+      height: 2px;
+      background: var(--mist);
+      border-radius: 2px;
+      margin-bottom: 2.5rem;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--terracotta);
+      transition: width 0.4s ease;
+    }
+
+    /* ── QUIZ ── */
+    .quiz { display: none; animation: fadeUp 0.5s ease both; }
+
+    .question-count {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--sub);
+      margin-bottom: 0.5rem;
+    }
+
+    .question-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.2rem, 4vw, 1.55rem);
+      color: var(--bark);
+      line-height: 1.35;
+      margin-bottom: 1.8rem;
+    }
+
+    .options { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
+      border: 1.5px solid var(--mist);
+      border-radius: 4px;
+      background: var(--warm-white);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .option:hover { border-color: var(--terracotta); background: #FFF9F5; }
+
+    .option.selected {
+      border-color: var(--terracotta);
+      background: #FFF3EB;
+      font-weight: 500;
+    }
+
+    .option-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1.5px solid #C9B9AB;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .option.selected .option-dot {
+      border-color: var(--terracotta);
+      background: var(--terracotta);
+    }
+
+    .option.selected .option-dot::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--sub);
+      border: 1.5px solid var(--mist);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .btn-ghost:hover { color: var(--bark); border-color: #C9B9AB; }
+
+    /* ── RESULTS ── */
+    .results { display: none; animation: fadeUp 0.5s ease both; }
+
+    .result-header { text-align: center; margin-bottom: 2.5rem; }
+
+    .curl-badge {
+      display: inline-block;
+      font-family: 'Playfair Display', serif;
+      font-size: 3.5rem;
+      font-weight: 600;
+      color: var(--terracotta);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .curl-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--bark);
+      margin-bottom: 0.6rem;
+    }
+
+    .curl-desc {
+      font-size: 0.95rem;
+      color: var(--sub);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .divider {
+      width: 40px;
+      height: 2px;
+      background: var(--terracotta);
+      margin: 2rem auto;
+    }
+
+    .result-section { margin-bottom: 2rem; }
+
+    .result-section h3 {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--cocoa);
+      margin-bottom: 1rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .card {
+      background: var(--warm-white);
+      border: 1.5px solid var(--mist);
+      border-radius: 4px;
+      padding: 1rem;
+    }
+
+    .card .card-title {
+      font-weight: 500;
+      font-size: 0.88rem;
+      color: var(--bark);
+      margin-bottom: 0.25rem;
+    }
+
+    .card .card-sub {
+      font-size: 0.8rem;
+      color: var(--sub);
+      line-height: 1.5;
+    }
+
+    .routine-list { list-style: none; }
+
+    .routine-list li {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--mist);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--text);
+    }
+
+    .routine-list li:last-child { border-bottom: none; }
+
+    .step-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--terracotta);
+      flex-shrink: 0;
+      width: 1.5rem;
+    }
+
+    .retake {
+      text-align: center;
+      margin-top: 2.5rem;
+    }
+
+    .retake button {
+      background: transparent;
+      border: none;
+      color: var(--sub);
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- INTRO -->
+  <div class="intro" id="intro">
+    <p class="eyebrow">Natural Hair Quiz</p>
+    <h1>Know your <em>curl.</em><br>Love your hair.</h1>
+    <p>Answer 6 quick questions to discover your curl pattern , plus a personalized routine, product picks, and styling tips made for you.</p>
+    <button class="btn" onclick="startQuiz()">Start the Quiz</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz" id="quiz">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <p class="question-count" id="questionCount">Question 1 of 6</p>
+    <p class="question-text" id="questionText"></p>
+    <div class="options" id="optionsContainer"></div>
+    <div class="nav">
+      <button class="btn-ghost" id="backBtn" onclick="prevQuestion()">← Back</button>
+      <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results"></div>
+
+</div>
+
+<script>
+  const questions = [
+    {
+      text: "When your hair is freshly washed and air-dried with no products, what does it look like?",
+      options: [
+        { label: "Loose, elongated S-waves", value: "3a" },
+        { label: "Defined ringlets or corkscrews", value: "3b" },
+        { label: "Tight, springy coils", value: "3c" },
+        { label: "Very tight zig-zag coils or barely any curl definition", value: "4" }
+      ]
+    },
+    {
+      text: "How much does your hair shrink when it dries?",
+      options: [
+        { label: "Less than 25% — it stays pretty long", value: "3a" },
+        { label: "About 25–50% shrinkage", value: "3b" },
+        { label: "About 50–75% shrinkage", value: "3c" },
+        { label: "75% or more — it puffs way up!", value: "4" }
+      ]
+    },
+    {
+      text: "What best describes your curl strand size?",
+      options: [
+        { label: "Wide like a piece of sidewalk chalk", value: "3a" },
+        { label: "About the size of a Sharpie marker", value: "3b" },
+        { label: "Pencil-width or a little smaller", value: "3c" },
+        { label: "Tiny zig-zags, hard to see individual curls", value: "4" }
+      ]
+    },
+    {
+      text: "How does your hair feel when dry without any products?",
+      options: [
+        { label: "Soft and easy to run fingers through", value: "3a" },
+        { label: "A little bouncy but can get frizzy", value: "3b" },
+        { label: "Dense and full, tends to be dry", value: "3c" },
+        { label: "Very dry and cotton-like, needs lots of moisture", value: "4" }
+      ]
+    },
+    {
+      text: "How does your hair respond to humidity?",
+      options: [
+        { label: "Gets frizzy and waves loosen a bit", value: "3a" },
+        { label: "Frizzes but curls are still visible", value: "3b" },
+        { label: "Puffs up a lot, loses definition", value: "3c" },
+        { label: "Shrinks even more, becomes very full", value: "4" }
+      ]
+    },
+    {
+      text: "Which hairstyle do you find easiest to achieve naturally?",
+      options: [
+        { label: "Wash-and-go with loose waves", value: "3a" },
+        { label: "Defined wash-and-go or twist-out", value: "3b" },
+        { label: "Twist-out, braid-out, or stretched styles", value: "3c" },
+        { label: "Puffs, protective styles, or stretched looks", value: "4" }
+      ]
+    }
+  ];
+
+  const results = {
+    "3a": {
+      type: "3A",
+      name: "Loose Curls",
+      desc: "Your curls are soft, loose, and full of shine. They form beautiful S-shaped waves that are easy to define and love moisture but can be weighed down easily.",
+      routine: [
+        "Co-wash or low-poo 1–2x per week — your scalp doesn't need daily washing.",
+        "Apply a lightweight curl cream or gel to soaking wet hair for best definition.",
+        "Scrunch out the crunch once fully dry — don't touch until then!",
+        "Deep condition every 1–2 weeks to keep waves bouncy, not crunchy.",
+        "Refresh with a water + leave-in spritz on non-wash days."
+      ],
+      products: [
+        { name: "As I Am Coconut CoWash", sub: "Gentle cleanse without stripping" },
+        { name: "SheaMoisture Curl Enhancing Smoothie", sub: "Defines without heaviness" },
+        { name: "Camille Rose Curl Maker", sub: "Frizz control + shine" },
+        { name: "Mielle Organics Leave-In", sub: "Lightweight daily moisture" }
+      ],
+      tips: [
+        { name: "Plopping", sub: "Use a microfiber towel to enhance curl shape after washing" },
+        { name: "Finger Coiling", sub: "Define sections while soaking wet for extra definition" },
+        { name: "Diffusing", sub: "Use low heat to speed drying without frizz" },
+        { name: "Pineapple at Night", sub: "Preserve your curls while you sleep" }
+      ]
+    },
+    "3b": {
+      type: "3B",
+      name: "Springy Ringlets",
+      desc: "You've got beautiful defined ringlets with serious volume and bounce. Your hair loves moisture and holds styles well — it just needs the right products to keep frizz at bay.",
+      routine: [
+        "Wash weekly with a sulfate-free shampoo — build-up is real with this texture.",
+        "Always detangle gently with a wide-tooth comb while conditioner is in.",
+        "Use the LOC method (Liquid, Oil, Cream) on wash day for lasting moisture.",
+        "Deep condition with heat (a hooded dryer or steam cap) every week.",
+        "Seal your ends with a heavier butter or oil to prevent breakage."
+      ],
+      products: [
+        { name: "TPH by Taraji Scalp Scrub", sub: "Great for clearing product build-up" },
+        { name: "Kinky-Curly Knot Today", sub: "Amazing detangler + leave-in" },
+        { name: "Aunt Jackie's Don't Shrink Flaxseed Gel", sub: "Strong hold without crunch" },
+        { name: "Briogeo Don't Despair Repair Mask", sub: "Deep conditioning treatment" }
+      ],
+      tips: [
+        { name: "Shingling", sub: "Apply gel section-by-section for maximum curl definition" },
+        { name: "Rake & Shake", sub: "Rake product through, shake ends for volume" },
+        { name: "Flexi-rod Set", sub: "Gorgeous uniform curls without heat" },
+        { name: "Satin Bonnet", sub: "Non-negotiable for preserving your ringlets overnight" }
+      ]
+    },
+    "3c": {
+      type: "3C",
+      name: "Tight Coily Curls",
+      desc: "Your coils are tight, full of personality, and absolutely stunning. This texture is prone to dryness so moisture is your best friend — with the right routine you'll have defined, thriving coils.",
+      routine: [
+        "Clarify monthly with a clarifying shampoo, co-wash the rest of the time.",
+        "Deep condition every single wash day — this is non-negotiable for your texture.",
+        "Section your hair into 4–6 parts before styling to make sure every curl gets product.",
+        "Seal with a heavy butter (like shea or mango) to lock moisture in all week.",
+        "Protective style between wash days to retain length and reduce manipulation."
+      ],
+      products: [
+        { name: "Adwoa Beauty Baomint Shampoo", sub: "Gentle clean without stripping oils" },
+        { name: "Olaplex No. 8 Bond Repair Mask", sub: "Strengthens and softens coils" },
+        { name: "Design Essentials Curl Enhancing Mousse", sub: "Lightweight definition" },
+        { name: "Eco Style Black Castor & Flaxseed Gel", sub: "Firm hold for elongated styles" }
+      ],
+      tips: [
+        { name: "Braid-Out", sub: "3–4 braids overnight for a gorgeous stretched look" },
+        { name: "Bantu Knot-Out", sub: "Creates defined, voluminous coils" },
+        { name: "Tension Method Wash & Go", sub: "Stretches coils while drying to reduce shrinkage" },
+        { name: "Two-Strand Twists", sub: "Perfect protective style that doubles as a twist-out" }
+      ]
+    },
+    "4": {
+      type: "4A/4B/4C",
+      name: "Kinky Coils",
+      desc: "Your hair is a crown — tight, coily, resilient, and incredibly versatile. Type 4 hair has the highest need for moisture and the most styling potential. Treat it gently and it will flourish.",
+      routine: [
+        "Co-wash weekly and clarify every 2–4 weeks to prevent build-up.",
+        "Deep condition with a protein treatment monthly and moisture mask weekly.",
+        "Always style on wet hair — never dry, this texture is most fragile when dry.",
+        "Use the LCO method (Liquid, Cream, Oil) to layer moisture effectively.",
+        "Protective style regularly — twists, braids, or updos help retain length."
+      ],
+      products: [
+        { name: "Melanin Haircare Co-Wash", sub: "Made specifically for Type 4 hair" },
+        { name: "Cantu Shea Butter Leave-In Cream", sub: "Rich moisture without weighing down" },
+        { name: "African Pride Moisture Miracle Mask", sub: "Intense weekly treatment" },
+        { name: "Castor Oil (Jamaican Black)", sub: "Seals edges and promotes growth" }
+      ],
+      tips: [
+        { name: "Twist-Out on Damp Hair", sub: "Let twists dry fully before unraveling for defined results" },
+        { name: "Finger Detangling", sub: "Start from ends up, always with conditioner in" },
+        { name: "Stretching Methods", sub: "African threading or banding to reduce shrinkage" },
+        { name: "Greenhouse Effect", sub: "Overnight deep moisture treatment under a cap" }
+      ]
+    }
+  };
+
+  let current = 0;
+  let answers = [];
+  let selectedIndex = null;
+
+  function startQuiz() {
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('quiz').style.display = 'block';
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const q = questions[current];
+    document.getElementById('questionCount').textContent = `Question ${current + 1} of ${questions.length}`;
+    document.getElementById('questionText').textContent = q.text;
+    document.getElementById('progressBar').style.width = `${(current / questions.length) * 100}%`;
+    document.getElementById('backBtn').style.visibility = current === 0 ? 'hidden' : 'visible';
+    document.getElementById('nextBtn').textContent = current === questions.length - 1 ? 'See My Results →' : 'Next →';
+    document.getElementById('nextBtn').disabled = answers[current] === undefined;
+
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const div = document.createElement('div');
+      div.className = 'option' + (answers[current] === i ? ' selected' : '');
+      div.innerHTML = `<span class="option-dot"></span><span>${opt.label}</span>`;
+      div.onclick = () => selectOption(i);
+      container.appendChild(div);
+    });
+  }
+
+  function selectOption(i) {
+    answers[current] = i;
+    document.querySelectorAll('.option').forEach((el, idx) => {
+      el.classList.toggle('selected', idx === i);
+    });
+    document.getElementById('nextBtn').disabled = false;
+  }
+
+  function nextQuestion() {
+    if (answers[current] === undefined) return;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function prevQuestion() {
+    if (current > 0) { current--; renderQuestion(); }
+  }
+
+  function showResults() {
+    // Tally answers
+    const tally = {};
+    answers.forEach((ansIdx, qIdx) => {
+      const val = questions[qIdx].options[ansIdx].value;
+      tally[val] = (tally[val] || 0) + 1;
+    });
+    // Find winner
+    let winner = Object.entries(tally).sort((a,b) => b[1]-a[1])[0][0];
+    // Map any "4" variant
+    if (winner === "4") winner = "4";
+
+    const r = results[winner] || results["4"];
+
+    document.getElementById('quiz').style.display = 'none';
+    const resultsEl = document.getElementById('results');
+    resultsEl.style.display = 'block';
+
+    resultsEl.innerHTML = `
+      <div class="result-header">
+        <div class="curl-badge">${r.type}</div>
+        <p class="curl-name">${r.name}</p>
+        <p class="curl-desc">${r.desc}</p>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="result-section">
+        <h3>Your Care Routine</h3>
+        <ul class="routine-list">
+          ${r.routine.map((step, i) => `
+            <li>
+              <span class="step-num">${i+1}</span>
+              <span>${step}</span>
+            </li>`).join('')}
+        </ul>
+      </div>
+
+      <div class="result-section">
+        <h3>Product Picks</h3>
+        <div class="card-grid">
+          ${r.products.map(p => `
+            <div class="card">
+              <div class="card-title">${p.name}</div>
+              <div class="card-sub">${p.sub}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="result-section">
+        <h3>Styling Tips</h3>
+        <div class="card-grid">
+          ${r.tips.map(t => `
+            <div class="card">
+              <div class="card-title">${t.name}</div>
+              <div class="card-sub">${t.sub}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="retake">
+        <button onclick="retake()">Retake the quiz</button>
+      </div>
+    `;
+  }
+
+  function retake() {
+    current = 0; answers = [];
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('quiz').style.display = 'block';
+    renderQuestion();
+  }
+</script>
+</body>
+</html>
